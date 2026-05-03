@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Monster Media Buyer — AI для таргетологів</title>
+<meta name="description" content="Підключи Meta Ads кабінет до Claude AI. Аналітика, звіти, оптимізація — через чат.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+:root {
+  --bg: #080c14;
+  --bg2: #0d1220;
+  --bg3: #111827;
+  --accent: #2563ff;
+  --accent2: #00d8ff;
+  --text: #e2e8f0;
+  --text2: #94a3b8;
+  --border: rgba(255,255,255,0.06);
+  --glow: rgba(37,99,255,0.15);
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Space Grotesk', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* ===== GRID BG ===== */
+.grid-bg {
+  position: fixed; top:0; left:0; width:100%; height:100%;
+  background-image:
+    linear-gradient(rgba(37,99,255,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(37,99,255,0.03) 1px, transparent 1px);
+  background-size: 60px 60px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ===== CURSOR GLOW ===== */
+.cursor-glow {
+  position: fixed;
+  width: 400px; height: 400px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(37,99,255,0.08) 0%, transparent 70%);
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  z-index: 0;
+  transition: left 0.3s ease, top 0.3s ease;
+}
+
+/* ===== NAV ===== */
+nav {
+  position: fixed; top:0; left:0; width:100%;
+  padding: 16px 32px;
+  display: flex; align-items: center; justify-content: space-between;
+  background: rgba(8,12,20,0.85);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+  z-index: 100;
+}
+
+.nav-logo {
+  display: flex; align-items: center; gap: 10px;
+  text-decoration: none; color: var(--text);
+}
+
+.nav-logo-icon {
+  width: 36px; height: 36px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px;
+  animation: logoPulse 3s ease-in-out infinite;
+}
+
+@keyframes logoPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(37,99,255,0.4); }
+  50% { box-shadow: 0 0 20px 4px rgba(37,99,255,0.2); }
+}
+
+.nav-logo-text {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 14px;
+  letter-spacing: 2px;
+  line-height: 1.1;
+}
+.nav-logo-text span { color: var(--accent2); }
+
+.nav-right { display: flex; align-items: center; gap: 16px; }
+
+.lang-switch {
+  display: flex;
+  background: var(--bg3);
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+.lang-btn {
+  padding: 6px 12px;
+  background: none; border: none;
+  color: var(--text2);
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.lang-btn.active {
+  background: var(--accent);
+  color: white;
+}
+
+/* ===== SECTIONS ===== */
+section { position: relative; z-index: 1; }
+
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* ===== HERO ===== */
+.hero {
+  min-height: 100vh;
+  display: flex; align-items: center; justify-content: center;
+  text-align: center;
+  padding: 120px 24px 80px;
+}
+
+.hero-content { max-width: 720px; }
+
+.hero-logo-wrap {
+  position: relative;
+  width: 140px; height: 140px;
+  margin: 0 auto 40px;
+}
+.hero-logo-ring, .hero-logo-ring2 {
+  position: absolute; inset: -10px;
+  border-radius: 50%;
+  border: 1px solid rgba(37,99,255,0.3);
+  animation: ringPulse 4s ease-in-out infinite;
+}
+.hero-logo-ring2 {
+  inset: -24px;
+  border-color: rgba(0,216,255,0.15);
+  animation-delay: 1s;
+}
+@keyframes ringPulse {
+  0%, 100% { transform: scale(1); opacity: 0.5; }
+  50% { transform: scale(1.08); opacity: 1; }
+}
+
+.hero-logo-img {
+  width: 140px; height: 140px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 64px;
+  box-shadow: 0 0 60px rgba(37,99,255,0.3);
+}
+
+.hero h1 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(40px, 8vw, 72px);
+  letter-spacing: 3px;
+  line-height: 1.05;
+  margin-bottom: 16px;
+}
+.hero h1 .gradient {
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.hero-sub {
+  font-size: 18px;
+  color: var(--text2);
+  margin-bottom: 36px;
+  max-width: 520px;
+  margin-left: auto; margin-right: auto;
+}
+
+.hero-buttons { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+
+.btn-primary {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 14px 32px;
+  background: var(--accent);
+  color: white;
+  border: none; border-radius: 12px;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 16px; font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.btn-primary:hover {
+  background: #3b7aff;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(37,99,255,0.4);
+}
+
+.btn-ghost {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 14px 32px;
+  background: transparent;
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 16px; font-weight: 500;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.btn-ghost:hover {
+  border-color: var(--accent);
+  background: rgba(37,99,255,0.05);
+}
+
+/* ===== DEMO CARD ===== */
+.demo-card {
+  margin-top: 60px;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 24px;
+  text-align: left;
+  max-width: 520px;
+  margin-left: auto; margin-right: auto;
+}
+
+.demo-header {
+  display: flex; align-items: center; gap: 8px;
+  margin-bottom: 16px;
+  font-size: 13px; color: var(--text2);
+}
+.demo-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: #22c55e;
+  animation: blink 2s infinite;
+}
+@keyframes blink { 50% { opacity: 0.4; } }
+
+.demo-table { width: 100%; border-collapse: collapse; }
+.demo-table th {
+  text-align: left;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text2);
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border);
+}
+.demo-table td {
+  padding: 10px 12px;
+  font-size: 14px;
+  border-bottom: 1px solid var(--border);
+}
+.demo-table tr:last-child td { border: none; }
+.demo-green { color: #22c55e; }
+.demo-red { color: #ef4444; }
+.demo-tag {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+}
+.demo-tag.active { background: rgba(34,197,94,0.15); color: #22c55e; }
+.demo-tag.paused { background: rgba(234,179,8,0.15); color: #eab308; }
+
+/* ===== SECTION TITLES ===== */
+.section-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(32px, 5vw, 48px);
+  letter-spacing: 2px;
+  text-align: center;
+  margin-bottom: 12px;
+}
+.section-sub {
+  text-align: center;
+  color: var(--text2);
+  font-size: 16px;
+  margin-bottom: 56px;
+  max-width: 500px;
+  margin-left: auto; margin-right: auto;
+}
+
+/* ===== HOW IT WORKS ===== */
+.how-section { padding: 100px 24px; }
+
+.steps {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 32px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+.step {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 32px;
+  text-align: center;
+  transition: all 0.3s;
+}
+.step:hover {
+  transform: translateY(-6px);
+  border-color: rgba(37,99,255,0.3);
+  box-shadow: 0 12px 40px rgba(37,99,255,0.1);
+}
+.step-num {
+  width: 48px; height: 48px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 24px;
+  margin: 0 auto 20px;
+}
+.step h3 {
+  font-size: 18px; font-weight: 600;
+  margin-bottom: 8px;
+}
+.step p { font-size: 14px; color: var(--text2); }
+
+/* ===== FEATURES ===== */
+.features-section { padding: 100px 24px; }
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 24px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+.feature-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 28px;
+  transition: all 0.3s;
+}
+.feature-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(37,99,255,0.3);
+  box-shadow: 0 8px 30px rgba(37,99,255,0.08);
+}
+.feature-icon {
+  width: 44px; height: 44px;
+  border-radius: 12px;
+  background: rgba(37,99,255,0.1);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px;
+  margin-bottom: 16px;
+}
+.feature-card h3 { font-size: 17px; font-weight: 600; margin-bottom: 8px; }
+.feature-card p { font-size: 14px; color: var(--text2); }
+
+/* ===== PRICING ===== */
+.pricing-section { padding: 100px 24px; }
+
+.pricing-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+.price-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 36px 28px;
+  position: relative;
+  transition: all 0.3s;
+}
+.price-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 40px rgba(37,99,255,0.1);
+}
+.price-card.popular {
+  border-color: var(--accent);
+  background: linear-gradient(180deg, rgba(37,99,255,0.08) 0%, var(--bg2) 100%);
+}
+.popular-badge {
+  position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
+  background: var(--accent);
+  color: white;
+  padding: 4px 16px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+.price-name {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 28px;
+  letter-spacing: 2px;
+  margin-bottom: 4px;
+}
+.price-amount {
+  font-size: 48px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+.price-amount span { font-size: 16px; color: var(--text2); font-weight: 400; }
+.price-desc { font-size: 14px; color: var(--text2); margin-bottom: 24px; }
+
+.price-features { list-style: none; margin-bottom: 28px; }
+.price-features li {
+  padding: 8px 0;
+  font-size: 14px;
+  display: flex; align-items: center; gap: 10px;
+}
+.price-features .check {
+  color: var(--accent2);
+  font-weight: 700;
+}
+
+.price-btn {
+  display: block;
+  width: 100%;
+  padding: 14px;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  color: var(--text);
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.price-btn:hover {
+  border-color: var(--accent);
+  background: rgba(37,99,255,0.05);
+}
+.price-card.popular .price-btn {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+.price-card.popular .price-btn:hover {
+  background: #3b7aff;
+  box-shadow: 0 8px 30px rgba(37,99,255,0.3);
+}
+
+/* ===== CTA ===== */
+.cta-section {
+  padding: 100px 24px;
+  text-align: center;
+}
+.cta-section h2 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(32px, 5vw, 48px);
+  letter-spacing: 2px;
+  margin-bottom: 12px;
+}
+.cta-section p {
+  color: var(--text2);
+  font-size: 16px;
+  margin-bottom: 32px;
+}
+
+/* ===== FOOTER ===== */
+footer {
+  padding: 32px 24px;
+  text-align: center;
+  border-top: 1px solid var(--border);
+  color: var(--text2);
+  font-size: 13px;
+}
+footer a { color: var(--text2); text-decoration: none; }
+footer a:hover { color: var(--accent2); }
+
+.footer-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 16px;
+}
+
+.footer-logo {
+  display: flex; align-items: center; gap: 10px;
+}
+.footer-logo-icon {
+  width: 28px; height: 28px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px;
+}
+
+/* ===== ANIMATIONS ===== */
+.fade-in {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.fade-in.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  nav { padding: 12px 16px; }
+  .nav-logo-text { font-size: 12px; }
+  .hero { padding: 100px 16px 60px; }
+  .hero-logo-wrap { width: 100px; height: 100px; margin-bottom: 28px; }
+  .hero-logo-img { width: 100px; height: 100px; font-size: 44px; }
+  .hero-sub { font-size: 15px; }
+  .btn-primary, .btn-ghost { padding: 12px 24px; font-size: 14px; }
+  .demo-card { padding: 16px; }
+  .steps, .features-grid, .pricing-grid { grid-template-columns: 1fr; }
+  .how-section, .features-section, .pricing-section, .cta-section { padding: 60px 16px; }
+}
+
+/* ===== LANG TOGGLE ===== */
+body.en [data-lang="uk"] { display: none; }
+body:not(.en) [data-lang="en"] { display: none; }
+</style>
+</head>
+<body>
+
+<div class="grid-bg"></div>
+<div class="cursor-glow" id="cursorGlow"></div>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo">
+    <div class="nav-logo-icon">👾</div>
+    <div class="nav-logo-text">MONSTER<span> MEDIA</span><br>BUYER</div>
+  </a>
+  <div class="nav-right">
+    <div class="lang-switch">
+      <button class="lang-btn active" id="langUk" onclick="setLang('uk')">UA</button>
+      <button class="lang-btn" id="langEn" onclick="setLang('en')">EN</button>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-content">
+    <div class="hero-logo-wrap">
+      <div class="hero-logo-ring2"></div>
+      <div class="hero-logo-ring"></div>
+      <div class="hero-logo-img">👾</div>
+    </div>
+
+    <h1>
+      <span data-lang="uk">META ADS + <span class="gradient">CLAUDE AI</span></span>
+      <span data-lang="en">META ADS + <span class="gradient">CLAUDE AI</span></span>
+    </h1>
+
+    <p class="hero-sub">
+      <span data-lang="uk">Підключи рекламні кабінети до штучного інтелекту. Аналітика, звіти, оптимізація — через чат.</span>
+      <span data-lang="en">Connect your ad accounts to AI. Analytics, reports, optimization — via chat.</span>
+    </p>
+
+    <div class="hero-buttons">
+      <a href="#pricing" class="btn-primary">
+        <span data-lang="uk">Почати безкоштовно →</span>
+        <span data-lang="en">Start free trial →</span>
+      </a>
+      <a href="#how" class="btn-ghost">
+        <span data-lang="uk">Як це працює</span>
+        <span data-lang="en">How it works</span>
+      </a>
+    </div>
+
+    <!-- DEMO CARD -->
+    <div class="demo-card fade-in">
+      <div class="demo-header">
+        <div class="demo-dot"></div>
+        <span data-lang="uk">Приклад звіту з Claude AI</span>
+        <span data-lang="en">Sample report from Claude AI</span>
+      </div>
+      <table class="demo-table">
+        <tr>
+          <th data-lang="uk">Кампанія</th><th data-lang="uk">Витрати</th><th data-lang="uk">Ліди</th><th data-lang="uk">CPL</th><th data-lang="uk">Статус</th>
+          <th data-lang="en">Campaign</th><th data-lang="en">Spend</th><th data-lang="en">Leads</th><th data-lang="en">CPL</th><th data-lang="en">Status</th>
+        </tr>
+        <tr>
+          <td>Campaign_A</td>
+          <td>$124.50</td>
+          <td>47</td>
+          <td class="demo-green">$2.65</td>
+          <td><span class="demo-tag active">Active</span></td>
+        </tr>
+        <tr>
+          <td>Campaign_B</td>
+          <td>$89.30</td>
+          <td>12</td>
+          <td class="demo-red">$7.44</td>
+          <td><span class="demo-tag paused">Paused</span></td>
+        </tr>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="how-section" id="how">
+  <div class="container">
+    <h2 class="section-title fade-in">
+      <span data-lang="uk">Як це працює</span>
+      <span data-lang="en">How it works</span>
+    </h2>
+    <p class="section-sub fade-in">
+      <span data-lang="uk">Три кроки до AI-керованої реклами</span>
+      <span data-lang="en">Three steps to AI-powered ads</span>
+    </p>
+
+    <div class="steps">
+      <div class="step fade-in">
+        <div class="step-num">1</div>
+        <h3>
+          <span data-lang="uk">Підключи кабінет</span>
+          <span data-lang="en">Connect account</span>
+        </h3>
+        <p>
+          <span data-lang="uk">Авторизуйся через Facebook і обери рекламні кабінети для підключення.</span>
+          <span data-lang="en">Log in via Facebook and select the ad accounts to connect.</span>
+        </p>
+      </div>
+      <div class="step fade-in">
+        <div class="step-num">2</div>
+        <h3>
+          <span data-lang="uk">Пиши в Claude</span>
+          <span data-lang="en">Chat with Claude</span>
+        </h3>
+        <p>
+          <span data-lang="uk">Відкрий Claude AI і пиши запити як до живого медіабаєра: "Покажи звіт за тиждень".</span>
+          <span data-lang="en">Open Claude AI and write requests like to a real media buyer: "Show me this week's report".</span>
+        </p>
+      </div>
+      <div class="step fade-in">
+        <div class="step-num">3</div>
+        <h3>
+          <span data-lang="uk">Отримай результат</span>
+          <span data-lang="en">Get results</span>
+        </h3>
+        <p>
+          <span data-lang="uk">Claude аналізує дані кабінету і дає звіти, рекомендації та може керувати кампаніями.</span>
+          <span data-lang="en">Claude analyzes account data and provides reports, recommendations, and can manage campaigns.</span>
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="features-section" id="features">
+  <div class="container">
+    <h2 class="section-title fade-in">
+      <span data-lang="uk">Можливості</span>
+      <span data-lang="en">Features</span>
+    </h2>
+    <p class="section-sub fade-in">
+      <span data-lang="uk">Все що потрібно таргетологу — в одному чаті</span>
+      <span data-lang="en">Everything a media buyer needs — in one chat</span>
+    </p>
+
+    <div class="features-grid">
+      <div class="feature-card fade-in">
+        <div class="feature-icon">📊</div>
+        <h3><span data-lang="uk">Аналітика в реальному часі</span><span data-lang="en">Real-time analytics</span></h3>
+        <p><span data-lang="uk">CPL, CTR, ROAS, витрати — все через один запит до Claude.</span><span data-lang="en">CPL, CTR, ROAS, spend — everything through one Claude request.</span></p>
+      </div>
+      <div class="feature-card fade-in">
+        <div class="feature-icon">🎯</div>
+        <h3><span data-lang="uk">Управління кампаніями</span><span data-lang="en">Campaign management</span></h3>
+        <p><span data-lang="uk">Створюй, вмикай, зупиняй кампанії та адсети прямо з чату.</span><span data-lang="en">Create, enable, pause campaigns and adsets directly from chat.</span></p>
+      </div>
+      <div class="feature-card fade-in">
+        <div class="feature-icon">📋</div>
+        <h3><span data-lang="uk">Автоматичні звіти</span><span data-lang="en">Auto reports</span></h3>
+        <p><span data-lang="uk">Щоденні, тижневі, місячні звіти за одне повідомлення.</span><span data-lang="en">Daily, weekly, monthly reports with a single message.</span></p>
+      </div>
+      <div class="feature-card fade-in">
+        <div class="feature-icon">👥</div>
+        <h3><span data-lang="uk">Аналіз аудиторій</span><span data-lang="en">Audience analysis</span></h3>
+        <p><span data-lang="uk">Знаходь нові інтереси, порівнюй аудиторії, тестуй гіпотези.</span><span data-lang="en">Find new interests, compare audiences, test hypotheses.</span></p>
+      </div>
+      <div class="feature-card fade-in">
+        <div class="feature-icon">🔒</div>
+        <h3><span data-lang="uk">Безпека токена</span><span data-lang="en">Token security</span></h3>
+        <p><span data-lang="uk">Твій токен зберігається на захищеному сервері. Ніхто інший не має доступу.</span><span data-lang="en">Your token is stored on a secure server. Nobody else has access.</span></p>
+      </div>
+      <div class="feature-card fade-in">
+        <div class="feature-icon">🏢</div>
+        <h3><span data-lang="uk">Кілька кабінетів</span><span data-lang="en">Multiple accounts</span></h3>
+        <p><span data-lang="uk">Підключай від 5 до необмеженої кількості рекламних кабінетів.</span><span data-lang="en">Connect from 5 to unlimited ad accounts.</span></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="pricing-section" id="pricing">
+  <div class="container">
+    <h2 class="section-title fade-in">
+      <span data-lang="uk">Тарифи</span>
+      <span data-lang="en">Pricing</span>
+    </h2>
+    <p class="section-sub fade-in">
+      <span data-lang="uk">Обери план під свої потреби</span>
+      <span data-lang="en">Choose a plan that fits your needs</span>
+    </p>
+
+    <div class="pricing-grid">
+      <!-- STARTER -->
+      <div class="price-card fade-in">
+        <div class="price-name">STARTER</div>
+        <div class="price-amount">$20<span>/mo</span></div>
+        <p class="price-desc">
+          <span data-lang="uk">Для фрілансерів та початківців</span>
+          <span data-lang="en">For freelancers and beginners</span>
+        </p>
+        <ul class="price-features">
+          <li><span class="check">✓</span> <span data-lang="uk">До 5 рекламних кабінетів</span><span data-lang="en">Up to 5 ad accounts</span></li>
+          <li><span class="check">✓</span> <span data-lang="uk">Аналітика та звіти</span><span data-lang="en">Analytics & reports</span></li>
+          <li><span class="check">✓</span> <span data-lang="uk">Управління кампаніями</span><span data-lang="en">Campaign management</span></li>
+          <li><span class="check">✓</span> <span data-lang="uk">Email підтримка</span><span data-lang="en">Email support</span></li>
+        </ul>
+        <a href="#" class="price-btn">
+          <span data-lang="uk">Обрати →</span>
+          <span data-lang="en">Get started →</span>
+        </a>
+      </div>
+
+      <!-- PRO -->
+      <div class="price-card popular fade-in">
+        <div class="popular-badge">POPULAR</div>
+        <div class="price-name">PRO</div>
+        <div class="price-amount">$70<span>/mo</span></div>
+        <p class="price-desc">
+          <span data-lang="uk">Для досвідчених таргетологів</span>
+          <span data-lang="en">For experienced media buyers</span>
+        </p>
+        <ul class="price-features">
+          <li><span class="check">✓</span> <span data-lang="uk">До 15 рекламних кабінетів</span><span data-lang="en">Up to 15 ad accounts</span></li>
+          <li><span class="check">✓</span> <span data-lang="uk">Все зі Starter</span><span data-lang="en">Everything in Starter</span></li>
+          <li><span class="check">✓</span> <span data-lang="uk">Пріоритетна підтримка</span><span data-lang="en">Priority support</span></li>
+          <li><span class="check">✓</span> <span data-lang="uk">Аналіз аудиторій</span><span data-lang="en">Audience analysis</span></li>
+          <li><span class="check">✓</span> <span data-lang="uk">Рекомендації з оптимізації</span><span data-lang="en">Optimization recommendations</span></li>
+        </ul>
+        <a href="#" class="price-btn">
+          <span data-lang="uk">Обрати →</span>
+          <span data-lang="en">Get started →</span>
+        </a>
+      </div>
+
+      <!-- AGENCY -->
+      <div class="price-card fade-in">
+        <div class="price-name">AGENCY</div>
+        <div class="price-amount">$150<span>/mo</span></div>
+        <p class="price-desc">
+          <span data-lang="uk">Для агенцій з повним доступом</span>
+          <span data-lang="en">For agencies with full access</span>
+        </p>
+        <ul class="price-features">
+          <li><span class="check">✓</span> <span data-lang="uk">Необмежена кількість кабінетів</span><span data-lang="en">Unlimited ad accounts</span></li>
+          <li><span class="check">✓</span> <span data-lang="uk">Все з Pro</span><span data-lang="en">Everything in Pro</span></li>
+          <li><span class="check">✓</span> <span data-lang="uk">Командний доступ (до 5 юзерів)</span><span data-lang="en">Team access (up to 5 users)</span></li>
+          <li><span class="check">✓</span> <span data-lang="uk">API доступ</span><span data-lang="en">API access</span></li>
+          <li><span class="check">✓</span> <span data-lang="uk">Персональний онбординг</span><span data-lang="en">Personal onboarding</span></li>
+        </ul>
+        <a href="#" class="price-btn">
+          <span data-lang="uk">Обрати →</span>
+          <span data-lang="en">Get started →</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <h2 class="fade-in">
+    <span data-lang="uk">Готовий керувати рекламою як монстр?</span>
+    <span data-lang="en">Ready to manage ads like a monster?</span>
+  </h2>
+  <p class="fade-in">
+    <span data-lang="uk">Приєднуйся до медіабаєрів, які економлять години щотижня.</span>
+    <span data-lang="en">Join media buyers who save hours every week with AI.</span>
+  </p>
+  <a href="#pricing" class="btn-primary fade-in">
+    <span data-lang="uk">Почати безкоштовно →</span>
+    <span data-lang="en">Start free trial →</span>
+  </a>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-logo">
+      <div class="footer-logo-icon">👾</div>
+      <span style="font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:1px;">MONSTER MEDIA BUYER</span>
+    </div>
+    <div>
+      © 2026 Monster Media Buyer · monstermediabuyer.pp.ua ·
+      <a href="privacy.html">Privacy Policy</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+// Language toggle
+function setLang(lang) {
+  if (lang === 'en') {
+    document.body.classList.add('en');
+    document.getElementById('langEn').classList.add('active');
+    document.getElementById('langUk').classList.remove('active');
+  } else {
+    document.body.classList.remove('en');
+    document.getElementById('langUk').classList.add('active');
+    document.getElementById('langEn').classList.remove('active');
+  }
+}
+
+// Cursor glow
+const glow = document.getElementById('cursorGlow');
+document.addEventListener('mousemove', e => {
+  glow.style.left = e.clientX + 'px';
+  glow.style.top = e.clientY + 'px';
+});
+
+// Scroll animations
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach((entry, i) => {
+    if (entry.isIntersecting) {
+      setTimeout(() => entry.target.classList.add('visible'), i * 100);
+    }
+  });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+</script>
+
+</body>
+</html>
